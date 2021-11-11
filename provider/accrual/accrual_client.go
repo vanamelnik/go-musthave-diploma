@@ -12,21 +12,23 @@ import (
 
 var _ AccrualClient = (*Accrual)(nil)
 
+const accrualRequestAPI = "/api/orders/"
+
 // Accrual is implementation of api.AccrualClient interface.
 type Accrual struct {
-	gopherAccrualURL string
+	accrualAPI string
 }
 
 // New creates a new instance of Accrual client.
-func New(gopherAccrualURL string) Accrual {
+func New(accrualSystemURL string) Accrual {
 	return Accrual{
-		gopherAccrualURL: gopherAccrualURL,
+		accrualAPI: accrualSystemURL + accrualRequestAPI,
 	}
 }
 
 // Request performs a request to GopherAccrualService.
 func (a Accrual) Request(ctx context.Context, orderID model.OrderID) (*AccrualResponse, error) {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, a.gopherAccrualURL+string(orderID), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, a.accrualAPI+string(orderID), nil)
 	if err != nil {
 		return nil, fmt.Errorf("client: AccrualRequest: %w", err)
 	}

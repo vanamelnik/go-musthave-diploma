@@ -6,11 +6,11 @@ package mockaccrual
 
 import (
 	context "context"
-	model "github.com/vanamelnik/go-musthave-diploma/model"
-	accrual "github.com/vanamelnik/go-musthave-diploma/provider/accrual"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
+	model "github.com/vanamelnik/go-musthave-diploma/model"
+	accrual "github.com/vanamelnik/go-musthave-diploma/provider/accrual"
 )
 
 // MockAccrualClient is a mock of AccrualClient interface.
