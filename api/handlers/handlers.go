@@ -180,6 +180,8 @@ func (h Handlers) GetOrders(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	enc := json.NewEncoder(w)
 	if err := enc.Encode(orders); err != nil {
 		log.Error().Err(err).Msg("marshalling orders list")
@@ -188,8 +190,6 @@ func (h Handlers) GetOrders(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
 }
 
 // GetBalance — get current user loyalty point balance.
@@ -205,6 +205,8 @@ func (h Handlers) GetBalance(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	enc := json.NewEncoder(w)
 	if err := enc.Encode(balance); err != nil {
 		log.Error().Err(err).Msg("marshalling balance")
@@ -213,8 +215,6 @@ func (h Handlers) GetBalance(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
 }
 
 // Withdraw — withdraw GPoints to pay a new order.
@@ -273,6 +273,8 @@ func (h Handlers) GetWithdrawals(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	enc := json.NewEncoder(w)
 	if err := enc.Encode(withdrawals); err != nil {
 		log.Error().Err(err).Msg("fetching user's withdrawals")
@@ -280,8 +282,6 @@ func (h Handlers) GetWithdrawals(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
 }
 
 // signIn creates a remember token and stores it in DB and in the user's cookie.

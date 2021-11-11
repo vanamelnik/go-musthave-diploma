@@ -68,6 +68,9 @@ func (p Psql) OrdersByStatus(ctx context.Context, status model.Status) ([]model.
 		}
 		orders = append(orders, o)
 	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 
 	return orders, nil
 }
@@ -113,6 +116,9 @@ func (p Psql) UserOrders(ctx context.Context, userID uuid.UUID) ([]model.Order, 
 			return nil, err
 		}
 		orders = append(orders, o)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
 	}
 
 	return orders, nil

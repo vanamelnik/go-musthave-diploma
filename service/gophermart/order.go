@@ -14,7 +14,7 @@ import (
 // ProcessOrder implements Service interface.
 func (g *GopherMart) ProcessOrder(ctx context.Context, orderID model.OrderID) error {
 	log := userLogger(ctx)
-	const logMsg = "service: ProcessOrder:"
+	const logPrefix = "service: ProcessOrder:"
 
 	user := appContext.User(ctx)
 	if user == nil {
@@ -22,7 +22,7 @@ func (g *GopherMart) ProcessOrder(ctx context.Context, orderID model.OrderID) er
 		return ErrNotAuthenticated
 	}
 	// if !orderID.Valid() {
-	// 	log.Trace().Err(ErrInvalidOrderNumber).Msg(logMsg)
+	// 	log.Trace().Err(ErrInvalidOrderNumber).Msg(logPrefix)
 	// 	return ErrInvalidOrderNumber
 	// }
 	log = log.With().Str("order ID", string(orderID)).Logger()
@@ -32,18 +32,18 @@ func (g *GopherMart) ProcessOrder(ctx context.Context, orderID model.OrderID) er
 	switch {
 	case err == nil:
 		if o.UserID == user.ID {
-			log.Trace().Err(ErrOrderExecutedBySameUser).Msg(logMsg)
+			log.Trace().Err(ErrOrderExecutedBySameUser).Msg(logPrefix)
 			return ErrOrderExecutedBySameUser
 		}
 		log.Trace().
 			Str("order owner", o.UserID.String()).
 			Err(ErrOrderExecutedByAnotherUser).
-			Msg(logMsg)
+			Msg(logPrefix)
 		return ErrOrderExecutedByAnotherUser
 
 	case !errors.Is(err, storage.ErrNotFound):
-		log.Trace().Err(err).Msg(logMsg)
-		return fmt.Errorf("%s %w", logMsg, err)
+		log.Trace().Err(err).Msg(logPrefix)
+		return fmt.Errorf("%s %w", logPrefix, err)
 	}
 
 	order := &model.Order{
@@ -56,10 +56,10 @@ func (g *GopherMart) ProcessOrder(ctx context.Context, orderID model.OrderID) er
 	if err := g.db.NewOrder(ctx, order); err != nil {
 		// storage.ErrAlreadyProcessed is an internal server error because the presence
 		// of an already loaded order in the database should have been determined by OrderById method.
-		log.Trace().Err(err).Msg(logMsg)
-		return fmt.Errorf("%s %w", logMsg, err)
+		log.Trace().Err(err).Msg(logPrefix)
+		return fmt.Errorf("%s %w", logPrefix, err)
 	}
-	log.Trace().Msgf("%s the order has been successfully stored in DB", logMsg)
+	log.Trace().Msgf("%s the order has been successfully stored in DB", logPrefix)
 
 	return nil
 }
@@ -67,11 +67,11 @@ func (g *GopherMart) ProcessOrder(ctx context.Context, orderID model.OrderID) er
 // Withdraw implements Service interface.
 func (g *GopherMart) Withdraw(ctx context.Context, orderID model.OrderID, sum float32) error {
 	log := userLogger(ctx)
-	const logMsg = "service: withdraw:"
+	const logPrefix = "service: withdraw:"
 
 	user := appContext.User(ctx)
 	if user == nil {
-		log.Trace().Err(ErrNotAuthenticated).Msg(logMsg)
+		log.Trace().Err(ErrNotAuthenticated).Msg(logPrefix)
 		return ErrNotAuthenticated
 	}
 
@@ -82,13 +82,14 @@ func (g *GopherMart) Withdraw(ctx context.Context, orderID model.OrderID, sum fl
 		Status:      model.StatusProcessing,
 		ProcessedAt: time.Now(),
 	}); err != nil {
-		log.Trace().Err(err).Msg(logMsg)
-		return fmt.Errorf("%s %w", logMsg, err)
+		log.Trace().Err(err).Msg(logPrefix)
+		return fmt.Errorf("%s %w", logPrefix, err)
 	}
 
-	log.Info().
-		Float32("withdrawed", sum).
-		Msg("successfully withdrawed")
+	// TODO: delete
+	// log.Info().
+	// 	Float32("withdrawed", sum).
+	// 	Msg("successfully withdrawed")
 
 	return nil
 }

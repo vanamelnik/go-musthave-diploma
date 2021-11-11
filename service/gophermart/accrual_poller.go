@@ -15,7 +15,7 @@ import (
 // If accrual calculation is done, a new entry in accruals log creates.
 func (g *GopherMart) accrualServicePoller(ctx context.Context) {
 	log := appContext.Logger(ctx)
-	log.Info().Msg("AccrualServicePoller started")
+	log.Info().Msg("accrualServicePoller started")
 poller:
 	for {
 		select {
@@ -28,18 +28,18 @@ poller:
 			}
 		}
 	}
-	log.Info().Msg("AccrualServicePoller stopped")
+	log.Info().Msg("accrualServicePoller stopped")
 }
 
 // getOrders returns the orders with statuses 'NEW', 'REGISTERED', 'PROCESSING' from the storage.
 func (g *GopherMart) getOrders(ctx context.Context) []model.Order {
 	log := appContext.Logger(ctx)
-	const logMsg = "service: poller: getOrders:"
+	const logPrefix = "service: poller: getOrders:"
 	orders := make([]model.Order, 0)
 	for _, status := range []model.Status{model.StatusNew, model.StatusProcessing, model.StatusRegistered} {
-		o, err := g.db.OrdersByStatus(ctx, model.StatusNew) // get orders with status 'NEW'
-		if err != nil {                                     // if there're no orders, empty list is returned and err == nil.
-			log.Error().Err(err).Msgf("%s could not get orders with status %s", logMsg, status)
+		o, err := g.db.OrdersByStatus(ctx, status)
+		if err != nil { // if there're no orders, empty list is returned and err == nil.
+			log.Error().Err(err).Msgf("%s could not get orders with status %s", logPrefix, status)
 		}
 		orders = append(orders, o...)
 	}
@@ -51,25 +51,26 @@ func (g *GopherMart) getOrders(ctx context.Context) []model.Order {
 // or 'INVALID'. If the calculation is done, the new entry in accruals log is created.
 func (g *GopherMart) processOrder(ctx context.Context, order model.Order) {
 	log := appContext.Logger(ctx).With().Str("orderID", order.ID.String()).Logger()
-	const logMsg = "service: poller: process order:"
+	const logPrefix = "service: poller: process order:"
 	// Mark NEW orders as REGISTERED.
 	if order.Status == model.StatusNew {
 		if err := g.db.UpdateOrderStatus(ctx, order.ID, model.StatusRegistered); err != nil {
-			log.Error().Err(err).Msgf("%s could not update order status, operation cancelled", logMsg)
+			log.Error().Err(err).Msgf("%s could not update order status, operation cancelled", logPrefix)
 
 			return
 		}
+		order.Status = model.StatusRegistered
 	}
 	// Send a request to the GopherAccualService
 	resp, err := g.accrualClient.Request(ctx, order.ID)
 	if err != nil {
 		var apiErr *accrual.ErrUnexpectedStatus
 		if errors.As(err, &apiErr) {
-			log.Warn().Err(err).Msgf("%s accrual service response:", logMsg)
+			log.Warn().Err(err).Msgf("%s accrual service response:", logPrefix)
 
 			return
 		}
-		log.Error().Err(err).Msgf("%s accrual service response:", logMsg)
+		log.Error().Err(err).Msgf("%s accrual service response:", logPrefix)
 
 		return
 	}
@@ -77,7 +78,7 @@ func (g *GopherMart) processOrder(ctx context.Context, order model.Order) {
 	if resp.Status == model.StatusProcessed {
 		if resp.Accrual < 0 {
 			if err := g.db.UpdateOrderStatus(ctx, order.ID, model.StatusInvalid); err != nil {
-				log.Error().Err(err).Msgf("%s could not update order status, operation cancelled", logMsg)
+				log.Error().Err(err).Msgf("%s could not update order status, operation cancelled", logPrefix)
 
 				return
 			}
@@ -85,19 +86,19 @@ func (g *GopherMart) processOrder(ctx context.Context, order model.Order) {
 		err := g.db.NewAccrual(ctx, order.ID, resp.Accrual) // if all is OK, the order status is set to 'PROCESSED' within db transaction.
 		switch {
 		case err == nil:
-			log.Info().Float32("amount", resp.Accrual).Msgf("%s a new entry in accruals log has been created", logMsg)
+			log.Info().Float32("amount", resp.Accrual).Msgf("%s a new entry in accruals log has been created", logPrefix)
 
 			return
 		case errors.Is(err, storage.ErrAlreadyProcessed):
-			log.Error().Err(err).Msgf("%s internal error! processed order has status %s", logMsg, order.Status)
+			log.Error().Err(err).Msgf("%s internal error! processed order has status %s", logPrefix, order.Status)
 
 			return
 		case errors.Is(err, storage.ErrNotFound):
-			log.Error().Err(err).Msgf("%s internal error! user not found", logMsg)
+			log.Error().Err(err).Msgf("%s internal error! user not found", logPrefix)
 
 			return
 		default:
-			log.Error().Err(err).Msgf("%s internal error:", logMsg)
+			log.Error().Err(err).Msgf("%s internal error:", logPrefix)
 
 			return
 		}
@@ -106,10 +107,10 @@ func (g *GopherMart) processOrder(ctx context.Context, order model.Order) {
 	// Update order status. Accrual calculation hasn't processed yet.
 	if resp.Status != order.Status {
 		if err := g.db.UpdateOrderStatus(ctx, order.ID, resp.Status); err != nil {
-			log.Error().Err(err).Msgf("%s could not update order status, operation cancelled", logMsg)
+			log.Error().Err(err).Msgf("%s could not update order status, operation cancelled", logPrefix)
 
 			return
 		}
-		log.Info().Str("status", string(resp.Status)).Msgf("%s status updated", logMsg)
+		log.Info().Str("status", string(resp.Status)).Msgf("%s status updated", logPrefix)
 	}
 }

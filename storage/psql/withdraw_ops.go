@@ -87,6 +87,9 @@ func (p Psql) WithdrawalsByUserID(ctx context.Context, id uuid.UUID) ([]model.Wi
 		}
 		withdrawals = append(withdrawals, w)
 	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 
 	return withdrawals, nil
 }

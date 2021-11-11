@@ -95,6 +95,9 @@ func (p Psql) UpdateBalance(ctx context.Context) (int, error) {
 		}
 		accruals = append(accruals, a)
 	}
+	if err := rows.Err(); err != nil {
+		return 0, err
+	}
 
 	// Add points to each account.
 	stmtBalance, err := tx.PrepareContext(ctx, `UPDATE users SET gpoints_balance = gpoints_balance + $1 WHERE id = $2;`)
