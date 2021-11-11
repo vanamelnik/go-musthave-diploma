@@ -32,6 +32,7 @@ var defaultConfig = Config{
 }
 
 type (
+	// Config represents configuration for all services.
 	Config struct {
 		RunAddr           string `mapstructure:"run_address"`
 		AccrualSystemAddr string `mapstructure:"accrual_system_address"`
@@ -63,6 +64,8 @@ func (c Config) Validate() (retErr error) {
 	return retErr
 }
 
+// LoadConfig sets up the configuration loaded from the file provided, enviroment variables
+// and flags.
 func LoadConfig(cfgFileName string) Config {
 	setDefaultConfig()
 	viper.SetConfigFile(cfgFileName)

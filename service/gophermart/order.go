@@ -86,10 +86,5 @@ func (g *GopherMart) Withdraw(ctx context.Context, orderID model.OrderID, sum fl
 		return fmt.Errorf("%s %w", logPrefix, err)
 	}
 
-	// TODO: delete
-	// log.Info().
-	// 	Float32("withdrawed", sum).
-	// 	Msg("successfully withdrawed")
-
 	return nil
 }

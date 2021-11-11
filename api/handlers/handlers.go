@@ -20,6 +20,7 @@ const (
 	cookieName        = "gophermart_remember"
 )
 
+// Handlers represents API handlers.
 type Handlers struct {
 	svc gophermart.Service
 	db  storage.Storage
@@ -32,6 +33,7 @@ func New(svc gophermart.Service, db storage.Storage) Handlers {
 	}
 }
 
+// User represents json request to the service with user's login and password.
 type User struct {
 	Login    string `json:"login"`
 	Password string `json:"password"`
@@ -39,7 +41,7 @@ type User struct {
 
 // Register — user registration.
 //
-// handles POST /api/user/register request.
+// POST /api/user/register
 func (h Handlers) Register(w http.ResponseWriter, r *http.Request) {
 	log := appContext.Logger(r.Context()).With().Str("handler", "Register").Logger()
 	if !checkContentType(r, "application/json") {
@@ -58,6 +60,7 @@ func (h Handlers) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Create a new user entry in DB.
 	user, err := h.svc.Create(r.Context(), u.Login, u.Password)
 	if err != nil {
 		log.Error().Err(err).Msg("creating a new user")
@@ -81,7 +84,7 @@ func (h Handlers) Register(w http.ResponseWriter, r *http.Request) {
 
 // Login — user authentication.
 //
-// handles POST /api/user/login request.
+// POST /api/user/login
 func (h Handlers) Login(w http.ResponseWriter, r *http.Request) {
 	log := appContext.Logger(r.Context()).With().Str("handler", "Login").Logger()
 	if !checkContentType(r, "application/json") {
@@ -105,7 +108,7 @@ func (h Handlers) Login(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if errors.Is(err, gophermart.ErrWrongPassword) {
 			log.Error().Err(err).Msg("authenticate: ")
-			http.Error(w, "Unauthorised", http.StatusUnauthorized)
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 
 			return
 		}
@@ -125,10 +128,10 @@ func (h Handlers) Login(w http.ResponseWriter, r *http.Request) {
 
 // PostOrder — load an order number to calculate.
 //
-// handles POST /api/user/orders request.
+// POST /api/user/orders
 func (h Handlers) PostOrder(w http.ResponseWriter, r *http.Request) {
 	log := appContext.Logger(r.Context()).With().Str("handler", "PostOrder").Logger()
-	b, err := io.ReadAll(r.Body)
+	body, err := io.ReadAll(r.Body)
 	if err != nil || r.ContentLength <= 0 || !checkContentType(r, "text/plain") {
 		log.Error().Err(err).Msg("reading body")
 		http.Error(w, "Bad request", http.StatusBadRequest)
@@ -136,7 +139,7 @@ func (h Handlers) PostOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
-	orderID := model.OrderID(b)
+	orderID := model.OrderID(body)
 	if !orderID.Valid() {
 		log.Error().Msgf("Invalid order number: %s", orderID.String())
 		http.Error(w, "Incorrect order number format", http.StatusUnprocessableEntity)
@@ -144,6 +147,8 @@ func (h Handlers) PostOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log = log.With().Str("orderID", orderID.String()).Logger()
+
+	// Process the order.
 	err = h.svc.ProcessOrder(r.Context(), orderID)
 	switch {
 	case err == nil:
@@ -161,11 +166,12 @@ func (h Handlers) PostOrder(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// GetOrders — get list of uploaded order numbers, processing status and accural information.
+// GetOrders — get list of uploaded order numbers, processing status and accrual information.
 //
-// handles GET /api/user/orders request.
+// GET /api/user/orders
 func (h Handlers) GetOrders(w http.ResponseWriter, r *http.Request) {
 	log := appContext.Logger(r.Context()).With().Str("handler", "GetOrders").Logger()
+
 	orders, err := h.svc.GetOrders(r.Context())
 	if err != nil {
 		log.Error().Err(err).Msg("get user orders")
@@ -194,9 +200,10 @@ func (h Handlers) GetOrders(w http.ResponseWriter, r *http.Request) {
 
 // GetBalance — get current user loyalty point balance.
 //
-// handles GET /api/user/balance request.
+// GET /api/user/balance
 func (h Handlers) GetBalance(w http.ResponseWriter, r *http.Request) {
 	log := appContext.Logger(r.Context()).With().Str("handler", "GetBalance").Logger()
+
 	balance, err := h.svc.GetBalance(r.Context())
 	if err != nil {
 		log.Error().Err(err).Msg("fetching balance info")
@@ -219,7 +226,7 @@ func (h Handlers) GetBalance(w http.ResponseWriter, r *http.Request) {
 
 // Withdraw — withdraw GPoints to pay a new order.
 //
-// handles POST /api/user/balance/withdraw request.
+// POST /api/user/balance/withdraw
 func (h Handlers) Withdraw(w http.ResponseWriter, r *http.Request) {
 	log := appContext.Logger(r.Context()).With().Str("handler", "Withdraw").Logger()
 	if !checkContentType(r, "application/json") {
@@ -228,6 +235,7 @@ func (h Handlers) Withdraw(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
+
 	dec := json.NewDecoder(r.Body)
 	defer r.Body.Close()
 	withdrawal := model.Withdrawal{}
@@ -238,12 +246,14 @@ func (h Handlers) Withdraw(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log = log.With().Str("orderID", withdrawal.OrderID.String()).Float32("sum", withdrawal.Sum).Logger()
+
 	if !withdrawal.OrderID.Valid() {
 		log.Error().Msg("Invalid order number")
 		http.Error(w, "Incorrect order number format", http.StatusUnprocessableEntity)
 
 		return
 	}
+
 	if err := h.svc.Withdraw(r.Context(), withdrawal.OrderID, withdrawal.Sum); err != nil {
 		if errors.Is(err, storage.ErrInsufficientPoints) {
 			log.Error().Err(err).Msg("withdrawing points")
@@ -261,11 +271,12 @@ func (h Handlers) Withdraw(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-// GetWithdrawals  — get withdrawal information from a user's savings account.
+// GetWithdrawals  — get withdrawal information from a user's bonus account.
 //
-// handles GET /api/user/balance/withdrawals request.
+// GET /api/user/balance/withdrawals
 func (h Handlers) GetWithdrawals(w http.ResponseWriter, r *http.Request) {
 	log := appContext.Logger(r.Context()).With().Str("handler", "Withdraw").Logger()
+
 	withdrawals, err := h.svc.GetWithdrawals(r.Context())
 	if err != nil {
 		log.Error().Err(err).Msg("fetching user's withdrawals")
@@ -273,6 +284,7 @@ func (h Handlers) GetWithdrawals(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	enc := json.NewEncoder(w)
@@ -313,6 +325,7 @@ func generateToken() (string, error) {
 	return base64.URLEncoding.EncodeToString(b), nil
 }
 
+// checkContentType checks whether "Content-type" field in the request contains the string provided.
 func checkContentType(r *http.Request, wantContentType string) bool {
 	return strings.Contains(r.Header.Get("Content-Type"), wantContentType)
 }

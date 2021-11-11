@@ -103,7 +103,7 @@ func (g *GopherMart) Close() {
 
 // userLogger gets a loger from context and expands it by user data fields.
 func userLogger(ctx context.Context) zerolog.Logger {
-	log := appContext.Logger(ctx) // TODO: that function panics if there's no logger in the context.
+	log := appContext.Logger(ctx)
 	c := appContext.User(ctx)
 	if c != nil {
 		// We use user's login to improve readability as log logs into the console.

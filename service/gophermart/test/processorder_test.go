@@ -108,28 +108,4 @@ func TestProcessOrder(t *testing.T) {
 			}
 		})
 	}
-
-	// TODO: implement a mock accrual server for client requests testing.
-	/*
-		tt2 := []struct {
-			name    string
-			orderId model.OrderId
-
-			wantErr     bool
-			errContains string
-		}{
-			{
-				name:             "#6 Accrual request returns not OK",
-				orderId:          "42",
-				wantErrSpecified: false,
-				wantErr:          nil,
-			},
-			{
-				name:             "#7 Accrual request returns wrong response",
-				orderId:          "50",
-				wantErrSpecified: false,
-				wantErr:          nil,
-			},
-		}
-	*/
 }

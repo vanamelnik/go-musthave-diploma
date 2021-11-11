@@ -17,7 +17,7 @@ import (
 // Create implements Service interface.
 func (g *GopherMart) Create(ctx context.Context, login, password string) (*model.User, error) {
 	const logPrefix = "service: create:"
-	log := appContext.Logger(ctx) // TODO: that function panics if there's no logger in the context.
+	log := appContext.Logger(ctx)
 
 	id, err := uuid.NewRandom()
 	if err != nil {
@@ -58,7 +58,7 @@ func (g *GopherMart) Create(ctx context.Context, login, password string) (*model
 
 // Authenticate implements Service interface.
 func (g *GopherMart) Authenticate(ctx context.Context, login, password string) (*model.User, error) {
-	log := appContext.Logger(ctx) // TODO: that function panics if there's no logger in the context.
+	log := appContext.Logger(ctx)
 	const logPrefix = "service: authenticate:"
 
 	// we don't need to validate login & password - in the DB all is OK.

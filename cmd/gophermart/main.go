@@ -19,11 +19,16 @@ import (
 )
 
 func main() {
+	// Load config.
 	cfg := config.LoadConfig("./config.toml")
 	must(cfg.Validate())
+
+	// Create the logger.
 	log := logging.NewLogger(logging.WithConsoleOutput(cfg.Logger.Console), logging.WithLevel(cfg.Logger.Level))
+	ctx := appContext.WithLogger(context.Background(), log)
 	log.Trace().Msgf("config loaded: %+v", cfg)
 
+	// Connect to the database.
 	db, err := psql.New(
 		psql.WithConfig(cfg.Database),
 		psql.WithAutoMigrate(log, "file://storage/psql/migration"),
@@ -31,17 +36,19 @@ func main() {
 	must(err)
 	defer db.Close()
 
-	ctx := appContext.WithLogger(context.Background(), log)
-
-	service, err := gophermart.New(ctx, db,
+	// Start Gophermart Service
+	service, err := gophermart.New(
+		ctx, db,
 		gophermart.WithConfig(cfg.Service),
 		gophermart.WithAccrualClient(accrual.New(cfg.AccrualSystemAddr)),
 	)
 	must(err)
 	defer service.Close()
 
+	// Setup handlers.
 	h := handlers.New(service, db)
 
+	// Setup routes
 	router := chi.NewRouter()
 	router.Use(middleware.WithLogger(log))
 	// TODO: add Compress middleware
@@ -64,13 +71,13 @@ func main() {
 
 	go func() {
 		err := server.ListenAndServe()
-		log.Error().Err(err).Msg("server stopped")
+		log.Info().Err(err).Msg("server stopped")
 	}()
-	log.Info().Msgf("Shortener server is listening at %s", cfg.RunAddr)
+	log.Info().Msgf("main: the server is listening at %s", cfg.RunAddr)
 
 	<-sigint
-	log.Info().Msg("Shutting down... ")
-	if err := server.Shutdown(context.Background()); err != nil {
+	log.Info().Msg("main: shutting down... ")
+	if err := server.Shutdown(ctx); err != nil {
 		log.Error().Err(err).Msg("server shutdown")
 	}
 }

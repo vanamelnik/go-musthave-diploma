@@ -8,15 +8,12 @@ import (
 	"github.com/google/uuid"
 )
 
-/* Номером заказа является последовательность цифр произвольной длины.
-Номер заказа может быть проверен на корректность ввода с помощью алгоритма Луна.*/
-
 const (
 	StatusNew        Status = "NEW"        // the order was uploaded, but was not processed
-	StatusRegistered Status = "REGISTERED" // the order is registered, but the accural is not claculated
-	StatusInvalid    Status = "INVALID"    // the order is not accepted and the accural is not calculated
-	StatusProcessing Status = "PROCESSING" // reward for the order is being calculated and reward
-	StatusProcessed  Status = "PROCESSED"  // calculating of accural is complete.
+	StatusRegistered Status = "REGISTERED" // the order is registered, but the accrual is not claculated
+	StatusInvalid    Status = "INVALID"    // the order is not accepted and the accrual is not calculated
+	StatusProcessing Status = "PROCESSING" // reward for the order is being calculated
+	StatusProcessed  Status = "PROCESSED"  // calculating of accrual is complete.
 )
 
 type (
