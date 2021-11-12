@@ -10,7 +10,7 @@ import (
 	"github.com/vanamelnik/go-musthave-diploma/storage"
 )
 
-// accrualServicePoller looks in the storage for 'NEW' and 'PROCESSING' orders and sends requests to the
+// accrualServicePoller looks in the storage for 'NEW', 'REGISTERED' and 'PROCESSING' orders and sends requests to the
 // GopherAccrualService. If poller receives a response with a status changed, the order status changedes in DB.
 // If accrual calculation is done, a new entry in accruals log creates.
 func (g *GopherMart) accrualServicePoller(ctx context.Context) {
@@ -29,6 +29,9 @@ poller:
 		}
 	}
 	log.Info().Msg("accrualServicePoller stopped")
+	if g.pollerSignal != nil {
+		close(g.pollerSignal)
+	}
 }
 
 // getOrders returns the orders with statuses 'NEW', 'REGISTERED', 'PROCESSING' from the storage.

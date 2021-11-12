@@ -24,8 +24,9 @@ type (
 	GopherMart struct {
 		// withWorkers is used for testing. If false, accrualServicePoller and balanceUpdater
 		// doesn't run.
-		withWorkers bool
-		stopWorkers context.CancelFunc
+		withWorkers  bool
+		stopWorkers  context.CancelFunc
+		pollerSignal chan struct{}
 
 		db       storage.Storage
 		pwPepper string
@@ -66,7 +67,7 @@ func WithoutWorkers() ServiceOption {
 }
 
 // New creates a new Gophermart object with provided database and other custom options.
-// Contract: expected logger in context
+// Contract: expected logger in context.
 func New(ctx context.Context, db storage.Storage, opts ...ServiceOption) (*GopherMart, error) {
 	ctxWorkers, cancelFn := context.WithCancel(ctx)
 
@@ -75,6 +76,7 @@ func New(ctx context.Context, db storage.Storage, opts ...ServiceOption) (*Gophe
 		db:            db,
 		accrualClient: accrual.New(defaultAccrualURL),
 		withWorkers:   true,
+		pollerSignal:  make(chan struct{}, 1),
 	}
 	for _, opt := range opts {
 		opt(g)
@@ -95,6 +97,7 @@ func New(ctx context.Context, db storage.Storage, opts ...ServiceOption) (*Gophe
 func (g *GopherMart) Close() {
 	g.stopWorkers()
 
+	<-g.pollerSignal
 	if g.db != nil {
 		g.db.Close()
 		g.db = nil

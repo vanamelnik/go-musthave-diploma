@@ -6,7 +6,7 @@ uri = 'postgres://root:qwe123@localhost:5432/gophermart?sslmode=disable'
 [service]
 accrual_system_address = 'localhost:1234'
 password_pepper = 'redhotchillipeppers'
-update_interval = '200ms'
+update_interval = '500ms'
 
 [logger]
 level = 'trace'
