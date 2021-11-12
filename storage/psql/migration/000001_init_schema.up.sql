@@ -37,9 +37,3 @@ CREATE TABLE "withdrawals_log" (
   "status" order_status, 
   "processed_at" timestamp
 );
-
---ALTER TABLE "orders" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
-
---ALTER TABLE "accruals_log" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
-
---ALTER TABLE "withdrawals_log" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");

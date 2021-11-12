@@ -51,7 +51,7 @@ func main() {
 	// Setup routes
 	router := chi.NewRouter()
 	router.Use(middleware.WithLogger(log))
-	// TODO: add Compress middleware
+	router.Use(middleware.GzipMdlw)
 
 	router.Post("/api/user/register", h.Register)
 	router.Post("/api/user/login", h.Login)
