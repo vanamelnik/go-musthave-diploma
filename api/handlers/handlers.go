@@ -185,6 +185,7 @@ func (h Handlers) GetOrders(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
+	log.Trace().Msgf("orders: %v", orders)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
