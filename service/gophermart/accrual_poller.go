@@ -19,7 +19,7 @@ func (g *GopherMart) accrualServicePoller(ctx context.Context) {
 poller:
 	for {
 		select {
-		case <-ctx.Done():
+		case <-g.workersStop:
 			break poller
 		default:
 			orders := g.getOrders(ctx)
@@ -29,9 +29,7 @@ poller:
 		}
 	}
 	log.Info().Msg("accrualServicePoller stopped")
-	if g.pollerSignal != nil {
-		close(g.pollerSignal)
-	}
+	g.workersWg.Done()
 }
 
 // getOrders returns the orders with statuses 'NEW', 'REGISTERED', 'PROCESSING' from the storage.

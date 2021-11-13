@@ -2,6 +2,7 @@ package gophermart
 
 import (
 	"context"
+	"sync"
 	"time"
 
 	appContext "github.com/vanamelnik/go-musthave-diploma/pkg/ctx"
@@ -24,15 +25,13 @@ type (
 	GopherMart struct {
 		// withWorkers is used for testing. If false, accrualServicePoller and balanceUpdater
 		// doesn't run.
-		withWorkers  bool
-		stopWorkers  context.CancelFunc
-		pollerSignal chan struct{}
-
-		db       storage.Storage
-		pwPepper string
-
-		accrualClient accrual.AccrualClient
-
+		withWorkers bool
+		workersStop chan struct{}
+		workersWg   sync.WaitGroup
+		db          storage.Storage
+		pwPepper    string
+		// accrualClient calls for sending a request to accrual service.
+		accrualClient      accrual.AccrualClient
 		balanceUpdInterval time.Duration
 	}
 
@@ -69,14 +68,11 @@ func WithoutWorkers() ServiceOption {
 // New creates a new Gophermart object with provided database and other custom options.
 // Contract: expected logger in context.
 func New(ctx context.Context, db storage.Storage, opts ...ServiceOption) (*GopherMart, error) {
-	ctxWorkers, cancelFn := context.WithCancel(ctx)
-
 	g := &GopherMart{
-		stopWorkers:   cancelFn,
+		workersStop:   make(chan struct{}),
 		db:            db,
 		accrualClient: accrual.New(defaultAccrualURL),
 		withWorkers:   true,
-		pollerSignal:  make(chan struct{}, 1),
 	}
 	for _, opt := range opts {
 		opt(g)
@@ -87,17 +83,20 @@ func New(ctx context.Context, db storage.Storage, opts ...ServiceOption) (*Gophe
 
 	if g.withWorkers {
 		// Start AccrualService poller and balance updater.
-		go g.accrualServicePoller(ctxWorkers)
-		go g.balanceUpdater(ctxWorkers)
+		g.workersWg.Add(2)
+		go g.accrualServicePoller(ctx)
+		go g.balanceUpdater(ctx)
 	}
 
 	return g, nil
 }
 
 func (g *GopherMart) Close() {
-	g.stopWorkers()
+	if g.workersStop != nil {
+		close(g.workersStop)
+	}
 
-	<-g.pollerSignal
+	g.workersWg.Wait() // wait until workers stopped
 	if g.db != nil {
 		g.db.Close()
 		g.db = nil

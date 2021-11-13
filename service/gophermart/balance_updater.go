@@ -23,10 +23,13 @@ loop:
 
 				continue
 			}
-			log.Info().Int("number of accrual operations processed", n).Msgf("%s", logPrefix)
-		case <-ctx.Done():
+			if n > 0 {
+				log.Info().Int("number of accrual operations processed", n).Msgf("%s", logPrefix)
+			}
+		case <-g.workersStop:
 			break loop
 		}
 	}
+	g.workersWg.Done()
 	log.Info().Msg("balanceUpdater stopped")
 }
