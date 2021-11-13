@@ -23,7 +23,6 @@ poller:
 			break poller
 		default:
 			orders := g.getOrders(ctx)
-			log.Trace().Msgf("orders to send: %v", orders)
 			for _, order := range orders {
 				g.processOrder(ctx, order)
 			}
