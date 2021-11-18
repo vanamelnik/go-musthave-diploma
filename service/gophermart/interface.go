@@ -10,17 +10,17 @@ type (
 	// Service defines model.Service operations.
 	Service interface {
 		// Create creates a new user, hashes his password and stores it in the storage
-		Create(ctx context.Context, login, password string) (*model.User, error)
+		Create(ctx context.Context, login, password string) (model.User, error)
 		// Authentcate checks whether a user with such login and password is in the storage.
 		// If successful, the model.User object is saved in the ctx.
-		Authenticate(ctx context.Context, login, password string) (*model.User, error)
+		Authenticate(ctx context.Context, login, password string) (model.User, error)
 
 		// The data of authenticated user is taken from the context.
 
 		// GetOrders fetches all orders of authenticated user from the storage.
 		GetOrders(ctx context.Context) ([]model.Order, error)
 		// GetBalance returns information about authenticated user's bonus balance and total withdrawn amount.
-		GetBalance(ctx context.Context) (*UserBalance, error)
+		GetBalance(ctx context.Context) (UserBalance, error)
 		// GetWithdrawals returns information about all withdrawal transactions of authenticated user.
 		GetWithdrawals(ctx context.Context) ([]model.Withdrawal, error)
 

@@ -58,7 +58,7 @@ func (ts *TestSuite) TestAccrual() {
 	}
 	for _, tc := range tt {
 		ts.Run(tc.name, func() {
-			err := ts.storage.NewAccrual(ts.ctx, tc.orderID, tc.amount)
+			err := ts.storage.CreateAccrual(ts.ctx, tc.orderID, tc.amount)
 			ts.Assert().ErrorIs(err, tc.wantErr)
 			if tc.checkIfProcessed {
 				o, err := ts.storage.OrderByID(ts.ctx, tc.orderID)

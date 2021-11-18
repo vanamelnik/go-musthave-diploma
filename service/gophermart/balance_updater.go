@@ -9,8 +9,7 @@ import (
 
 // balanceUpdater looks for unfinished acrrual operations and updates user balance with accrual points.
 func (g *GopherMart) balanceUpdater(ctx context.Context) {
-	log := appContext.Logger(ctx)
-	const logPrefix = "balanceUpdater:"
+	log := appContext.Logger(ctx).With().Str("service:", "balanceUpdater").Logger()
 	log.Info().Msg("balanceUpdater started")
 	t := time.NewTicker(g.balanceUpdInterval)
 loop:
@@ -19,12 +18,12 @@ loop:
 		case <-t.C:
 			n, err := g.db.UpdateBalance(ctx)
 			if err != nil {
-				log.Error().Err(err).Msgf("%s", logPrefix)
+				log.Error().Err(err).Msg("")
 
 				continue
 			}
 			if n > 0 {
-				log.Info().Int("number of accrual operations processed", n).Msgf("%s", logPrefix)
+				log.Info().Int("number of accrual operations processed", n).Msg("")
 			}
 		case <-g.workersStop:
 			break loop

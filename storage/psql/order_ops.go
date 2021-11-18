@@ -13,8 +13,8 @@ import (
 	"github.com/jackc/pgx"
 )
 
-// NewOrder implements Storage interface.
-func (p Psql) NewOrder(ctx context.Context, order *model.Order) error {
+// CreateOrder implements Storage interface.
+func (p Psql) CreateOrder(ctx context.Context, order *model.Order) error {
 	const query = `INSERT INTO orders (id, user_id, status, accrual_points, uploaded_at)
 	VALUES ($1, $2, $3, $4, $5);`
 	_, err := p.db.ExecContext(ctx, query,

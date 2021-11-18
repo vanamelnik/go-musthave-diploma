@@ -298,7 +298,7 @@ func (h Handlers) GetWithdrawals(w http.ResponseWriter, r *http.Request) {
 }
 
 // signIn creates a remember token and stores it in DB and in the user's cookie.
-func (h Handlers) signIn(w http.ResponseWriter, r *http.Request, user *model.User) error {
+func (h Handlers) signIn(w http.ResponseWriter, r *http.Request, user model.User) error {
 	remember, err := generateToken()
 	if err != nil {
 		return err

@@ -34,13 +34,12 @@ poller:
 
 // getOrders returns the orders with statuses 'NEW' and 'PROCESSING' from the storage.
 func (g *GopherMart) getOrders(ctx context.Context) []model.Order {
-	log := appContext.Logger(ctx)
-	const logPrefix = "service: poller: getOrders:"
+	log := appContext.Logger(ctx).With().Str("service:", "poller: getOrders:").Logger()
 	orders := make([]model.Order, 0)
 	for _, status := range []model.Status{model.StatusNew, model.StatusProcessing} {
 		o, err := g.db.OrdersByStatus(ctx, status)
 		if err != nil { // if there're no orders, empty list is returned and err == nil.
-			log.Error().Err(err).Msgf("%s could not get orders with status %s", logPrefix, status)
+			log.Error().Err(err).Msgf("could not get orders with status %s", status)
 		}
 		orders = append(orders, o...)
 	}
@@ -51,19 +50,21 @@ func (g *GopherMart) getOrders(ctx context.Context) []model.Order {
 // processOrder sends a request to GopherAccrualService and updates order status to 'PROCESSING'
 // or 'INVALID'. If the calculation is done, the new entry in accruals log is created.
 func (g *GopherMart) processOrder(ctx context.Context, order model.Order) {
-	log := appContext.Logger(ctx).With().Str("orderID", order.ID.String()).Logger()
-	const logPrefix = "service: poller: process order:"
+	log := appContext.Logger(ctx).With().
+		Str("orderID", order.ID.String()).
+		Str("service:", "poller: process order:").
+		Logger()
 
 	// Send a request to the GopherAccualService
 	resp, err := g.accrualClient.Request(ctx, order.ID)
 	if err != nil {
 		var apiErr *accrual.ErrUnexpectedStatus
 		if errors.As(err, &apiErr) {
-			log.Warn().Err(err).Msgf("%s accrual service response:", logPrefix)
+			log.Warn().Err(err).Msg("accrual service response:")
 
 			return
 		}
-		log.Error().Err(err).Msgf("%s accrual service response:", logPrefix)
+		log.Error().Err(err).Msg("accrual service response:")
 
 		return
 	}
@@ -71,39 +72,36 @@ func (g *GopherMart) processOrder(ctx context.Context, order model.Order) {
 	if resp.Status == model.StatusProcessed {
 		if resp.Accrual < 0 {
 			if err := g.db.UpdateOrderStatus(ctx, order.ID, model.StatusInvalid); err != nil {
-				log.Error().Err(err).Msgf("%s could not update order status, operation cancelled", logPrefix)
+				log.Error().Err(err).Msg("could not update order status, operation canceled")
 
 				return
 			}
 		}
-		err := g.db.NewAccrual(ctx, order.ID, resp.Accrual) // if all is OK, the order status is set to 'PROCESSED' within db transaction.
-		switch {
-		case err == nil:
-			log.Info().Float32("amount", resp.Accrual).Msgf("%s a new entry in accruals log has been created", logPrefix)
-
-			return
-		case errors.Is(err, storage.ErrAlreadyProcessed):
-			log.Error().Err(err).Msgf("%s internal error! processed order has status %s", logPrefix, order.Status)
-
-			return
-		case errors.Is(err, storage.ErrNotFound):
-			log.Error().Err(err).Msgf("%s internal error! user not found", logPrefix)
-
-			return
-		default:
-			log.Error().Err(err).Msgf("%s internal error:", logPrefix)
-
+		// if all is OK, the order status is set to 'PROCESSED' within db transaction.
+		if err := g.db.CreateAccrual(ctx, order.ID, resp.Accrual); err != nil {
+			if errors.Is(err, storage.ErrAlreadyProcessed) {
+				log.Error().Err(err).Msgf("internal error! processed order has status %s", order.Status)
+				return
+			}
+			if errors.Is(err, storage.ErrNotFound) {
+				log.Error().Err(err).Msg("internal error! user not found")
+				return
+			}
+			log.Error().Err(err).Msg("internal error:")
 			return
 		}
+		log.Info().Float32("amount", resp.Accrual).Msg("a new entry in accruals log has been created")
 
+		return
 	}
+
 	// Update order status. Accrual calculation hasn't processed yet.
 	if resp.Status != order.Status && resp.Status != model.StatusRegistered {
 		if err := g.db.UpdateOrderStatus(ctx, order.ID, resp.Status); err != nil {
-			log.Error().Err(err).Msgf("%s could not update order status, operation cancelled", logPrefix)
+			log.Error().Err(err).Msg("could not update order status, operation canceled")
 
 			return
 		}
-		log.Info().Str("status", string(resp.Status)).Msgf("%s status updated", logPrefix)
+		log.Info().Str("status", string(resp.Status)).Msg("status updated")
 	}
 }

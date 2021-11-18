@@ -28,8 +28,8 @@ func TestCreate(t *testing.T) {
 	ctx, s, err := initServices(db, pepper)
 	require.NoError(t, err)
 
-	db.EXPECT().NewUser(gomock.Any(), gomock.Any()).Return(nil).Times(1)                           // for test #5
-	db.EXPECT().NewUser(gomock.Any(), gomock.Any()).Return(storage.ErrLoginAlreadyExists).Times(1) // for test #6
+	db.EXPECT().CreateUser(gomock.Any(), gomock.Any()).Return(nil).Times(1)                           // for test #5
+	db.EXPECT().CreateUser(gomock.Any(), gomock.Any()).Return(storage.ErrLoginAlreadyExists).Times(1) // for test #6
 
 	tt := []struct {
 		name     string

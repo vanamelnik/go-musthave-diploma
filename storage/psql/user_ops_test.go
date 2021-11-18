@@ -31,14 +31,14 @@ func (ts *TestSuite) TestCreateUsers() {
 		ts.Run(tc.name, func() {
 			hash, err := bcrypt.BcryptPassword(tc.login, "") // all our fake people use their login as a password!..
 			ts.Require().NoError(err)
-			c := &model.User{
+			u := &model.User{
 				ID:             uuid.New(),
 				Login:          tc.login,
 				PasswordHash:   hash,
 				CreatedAt:      time.Now(),
 				GPointsBalance: 0,
 			}
-			err = ts.storage.NewUser(ts.ctx, c)
+			err = ts.storage.CreateUser(ts.ctx, *u)
 			ts.Assert().ErrorIs(err, tc.wantErr)
 		})
 	}

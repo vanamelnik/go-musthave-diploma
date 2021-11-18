@@ -39,7 +39,7 @@ type (
 )
 
 func (ts *TestSuite) SetupSuite() {
-	storage, err := New(WithConfig(defaultConfig),
+	storage, err := New(WithDSN(defaultDSN),
 		WithAutoMigrate(logging.NewLogger(logging.WithConsoleOutput(true)),
 			migrationsPath))
 	ts.Require().NoError(err)
@@ -87,14 +87,14 @@ func (ts *TestSuite) loadFixtures() {
 		f.user.ID = uuid.New()
 		f.user.PasswordHash = hash
 		f.user.CreatedAt = time.Now()
-		err = ts.storage.NewUser(ts.ctx, f.user)
+		err = ts.storage.CreateUser(ts.ctx, *f.user)
 		ts.Require().NoError(err)
 
 		// Setup and load orders
 		for _, o := range f.orders {
 			o.UserID = f.user.ID
 			o.UploadedAt = time.Now()
-			err := ts.storage.NewOrder(ts.ctx, o)
+			err := ts.storage.CreateOrder(ts.ctx, o)
 			ts.Require().NoError(err)
 		}
 	}

@@ -14,8 +14,8 @@ import (
 	"github.com/jackc/pgx"
 )
 
-// NewAccrual implements Storage interface.
-func (p Psql) NewAccrual(ctx context.Context, orderID model.OrderID, amount float32) error {
+// CreateAccrual implements Storage interface.
+func (p Psql) CreateAccrual(ctx context.Context, orderID model.OrderID, amount float32) error {
 	tx, err := p.db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
@@ -32,7 +32,7 @@ func (p Psql) NewAccrual(ctx context.Context, orderID model.OrderID, amount floa
 	}
 
 	// Insert accrual information into accruals_log table. If the data has already been inserted
-	// an unique violation error will be threw.
+	// an unique violation error will be thrown.
 	if _, err = tx.ExecContext(ctx, `INSERT INTO accruals_log (order_id, user_id, sum) VALUES ($1, $2, $3);`,
 		orderID, userID, amount); err != nil {
 		var pgErr pgx.PgError

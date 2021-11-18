@@ -11,17 +11,17 @@ import (
 )
 
 type Storage interface {
-	// NewUser adds user information to db. 'Password' field is ignored.
-	NewUser(ctx context.Context, user *model.User) error
+	// CreateUser adds user information to db. 'Password' field is ignored.
+	CreateUser(ctx context.Context, user model.User) error
 	// UserByLogin looks for a user with provided login.
 	UserByLogin(ctx context.Context, login string) (*model.User, error)
 	// UserByRemember lloks for a user with provided remember token.
 	UserByRemember(ctx context.Context, remember string) (*model.User, error)
 	// UpdateUser updates user information (login, password hash and remember token).
-	UpdateUser(ctx context.Context, user *model.User) error
+	UpdateUser(ctx context.Context, user model.User) error
 
-	// NewOrder creates a new entry in the orders table.
-	NewOrder(ctx context.Context, order *model.Order) error
+	// CreateOrder creates a new entry in the orders table.
+	CreateOrder(ctx context.Context, order *model.Order) error
 	// UpdateOrderStatus sets the status of the order with orderId provided to the value provided.
 	UpdateOrderStatus(ctx context.Context, orderID model.OrderID, status model.Status) error
 	// UserOrders gets all orders made by the provided user.
@@ -31,17 +31,17 @@ type Storage interface {
 	// OrderByStatus returns all orders with specified status. If there aren't any, empty slice is returned.
 	OrdersByStatus(ctx context.Context, status model.Status) ([]model.Order, error)
 
-	// NewAccrual adds a new entry into the accruals_log table and updates an order status in orders table.
+	// CreateAccrual adds a new entry into the accruals_log table and updates an order status in orders table.
 	// orderId must be unique.
-	NewAccrual(ctx context.Context, orderID model.OrderID, amount float32) error
+	CreateAccrual(ctx context.Context, orderID model.OrderID, amount float32) error
 	// UpdateBalance checks all unprocessed accruals in the table and adds the points to users' balances.
 	// Flags 'processed' are set to true.
 	UpdateBalance(ctx context.Context) (int, error)
 
-	// NewWithdraw creates a new entry in the withdrawals_log table and updates user's balance.
+	// CreateWithdraw creates a new entry in the withdrawals_log table and updates user's balance.
 	// This function must update and check users's balance and return the error if the balance is less than the amount provided.
 	// OrderId must be unique.
-	NewWithdraw(ctx context.Context, withdraw *model.Withdrawal) error
+	CreateWithdraw(ctx context.Context, withdraw *model.Withdrawal) error
 	// WithdrawalsByUserID fetches all withdrawals made by the provided user. If there aren't any, empty slice is returned.
 	WithdrawalsByUserID(ctx context.Context, id uuid.UUID) ([]model.Withdrawal, error)
 

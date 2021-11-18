@@ -1,7 +1,6 @@
 run_address = ':3000'
+database_uri = 'postgres://root:qwe123@localhost:5432/gophermart?sslmode=disable'
 
-[database]
-uri = 'postgres://root:qwe123@localhost:5432/gophermart?sslmode=disable'
 
 [service]
 accrual_system_address = 'localhost:1234'

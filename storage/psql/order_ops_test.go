@@ -57,7 +57,7 @@ func (ts *TestSuite) TestNewOrder() {
 
 	for _, tc := range tt {
 		ts.Run(tc.name, func() {
-			err := ts.storage.NewOrder(ts.ctx, &model.Order{
+			err := ts.storage.CreateOrder(ts.ctx, &model.Order{
 				ID:         tc.orderID,
 				UserID:     tc.userID,
 				Status:     tc.status,
@@ -163,7 +163,7 @@ func (ts *TestSuite) TestOrdersByStatus() {
 
 func (ts *TestSuite) TestUpdateStatus() {
 	const orderID model.OrderID = "067"
-	ts.Require().NoError(ts.storage.NewOrder(ts.ctx, &model.Order{
+	ts.Require().NoError(ts.storage.CreateOrder(ts.ctx, &model.Order{
 		ID:            orderID,
 		UserID:        ts.bob.user.ID,
 		Status:        "REGISTERED",

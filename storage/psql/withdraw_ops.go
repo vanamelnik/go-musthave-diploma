@@ -14,8 +14,8 @@ import (
 	"github.com/jackc/pgx"
 )
 
-// NewWithdraw implements Storage interface.
-func (p Psql) NewWithdraw(ctx context.Context, withdraw *model.Withdrawal) error {
+// CreateWithdraw implements Storage interface.
+func (p Psql) CreateWithdraw(ctx context.Context, withdraw *model.Withdrawal) error {
 	// Try to create a new entry in the withdrawals_log table. If the order has already been processed, return an error.
 	withdraw.Status = model.StatusProcessing
 	if withdraw.Sum < 0 {

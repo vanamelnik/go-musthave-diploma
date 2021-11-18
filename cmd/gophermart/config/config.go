@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/vanamelnik/go-musthave-diploma/service/gophermart"
-	"github.com/vanamelnik/go-musthave-diploma/storage/psql"
 
 	"github.com/hashicorp/go-multierror"
 	flag "github.com/spf13/pflag"
@@ -22,9 +21,7 @@ var defaultConfig = Config{
 		Level:   "debug",
 		Console: false,
 	},
-	Database: psql.Config{
-		DSN: "postgres://root:secret@localhost:5432/gophermart?sslmode=disable",
-	},
+	DatabaseURI: "postgres://root:secret@localhost:5432/gophermart?sslmode=disable",
 	Service: gophermart.Config{
 		PasswordPepper: "secret",
 		UpdateInterval: 2 * time.Second,
@@ -37,9 +34,9 @@ type (
 		RunAddr           string `mapstructure:"run_address"`
 		AccrualSystemAddr string `mapstructure:"accrual_system_address"`
 
-		Logger   LoggerConfig
-		Database psql.Config
-		Service  gophermart.Config
+		Logger      LoggerConfig
+		DatabaseURI string `mapstructure:"database_uri"`
+		Service     gophermart.Config
 	}
 
 	LoggerConfig struct {
@@ -64,7 +61,7 @@ func (c Config) Validate() (retErr error) {
 	return retErr
 }
 
-// LoadConfig sets up the configuration loaded from the file provided, enviroment variables
+// LoadConfig sets up the configuration loaded from the file provided, environment variables
 // and flags.
 func LoadConfig(cfgFileName string) Config {
 	setDefaultConfig()
@@ -90,7 +87,7 @@ func LoadConfig(cfgFileName string) Config {
 
 func bindFlags() {
 	_ = flag.StringP("run_address", "a", defaultConfig.RunAddr, "service's run address and port")
-	_ = flag.StringP("database.uri", "d", defaultConfig.Database.DSN, "DSN string for database connection")
+	_ = flag.StringP("database_uri", "d", defaultConfig.DatabaseURI, "DSN string for database connection")
 	_ = flag.StringP("accrual_system_address", "r", defaultConfig.AccrualSystemAddr, "service's run address and port")
 	flag.Parse()
 	err := viper.BindPFlags(flag.CommandLine)
@@ -104,7 +101,7 @@ func setDefaultConfig() {
 	viper.SetDefault("accrual_system_address", defaultConfig.AccrualSystemAddr)
 	viper.SetDefault("logger.level", defaultConfig.Logger.Level)
 	viper.SetDefault("logger.console", defaultConfig.Logger.Console)
-	viper.SetDefault("database.uri", defaultConfig.Database.DSN)
+	viper.SetDefault("database_uri", defaultConfig.DatabaseURI)
 	viper.SetDefault("service.password_pepper", defaultConfig.Service.PasswordPepper)
 	viper.SetDefault("service.update_interval", defaultConfig.Service.UpdateInterval)
 }

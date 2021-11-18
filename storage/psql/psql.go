@@ -20,19 +20,21 @@ import (
 // Ensure service implements interface.
 var _ storage.Storage = (*Psql)(nil)
 
+const defaultDSN = "postgres://root:qwe123@localhost:5432/gophermart?sslmode=disable"
+
 type (
 	Psql struct {
-		config Config
-		db     *sql.DB
+		dsn string
+		db  *sql.DB
 	}
 
 	Option func(*Psql) error
 )
 
-// WithConfig overrides default config.
-func WithConfig(config Config) Option {
+// WithDSN overrides default config.
+func WithDSN(dsn string) Option {
 	return func(p *Psql) error {
-		p.config = config
+		p.dsn = dsn
 
 		return nil
 	}
@@ -41,7 +43,7 @@ func WithConfig(config Config) Option {
 // WithAutoMigrate applies migrate against db. Should run after setting up correct DSN string in the config.
 func WithAutoMigrate(log zerolog.Logger, path string) Option {
 	return func(p *Psql) error {
-		m, err := migrate.New(path, p.config.DSN)
+		m, err := migrate.New(path, p.dsn)
 		if err != nil {
 			return fmt.Errorf("psql: WithAutoMigrate: %w", err)
 		}
@@ -58,24 +60,21 @@ func WithAutoMigrate(log zerolog.Logger, path string) Option {
 
 // New creates a new connection to postgres database.
 func New(opts ...Option) (*Psql, error) {
-	p := &Psql{config: defaultConfig}
+	p := &Psql{dsn: defaultDSN}
 	for i, opt := range opts {
 		if err := opt(p); err != nil {
 			return nil, fmt.Errorf("storage: applying option [%d]: %w", i, err)
 		}
 	}
-	if err := p.config.Validate(); err != nil {
-		return nil, err
-	}
 
-	db, err := sql.Open("pgx", p.config.DSN)
+	db, err := sql.Open("pgx", p.dsn)
 	if err != nil {
 		return nil, err
 	}
 	p.db = db
 
 	if err := p.db.Ping(); err != nil {
-		return nil, fmt.Errorf("storage: ping for DSN (%s) failed: %w", p.config.DSN, err)
+		return nil, fmt.Errorf("storage: ping for DSN (%s) failed: %w", p.dsn, err)
 	}
 
 	return p, nil

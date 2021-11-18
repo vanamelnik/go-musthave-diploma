@@ -16,7 +16,7 @@ func (ts *TestSuite) TestWithdraw() {
 		CreatedAt:      time.Now(),
 		GPointsBalance: 300,
 	}
-	ts.Require().NoError(ts.storage.NewUser(ts.ctx, dave))
+	ts.Require().NoError(ts.storage.CreateUser(ts.ctx, *dave))
 
 	tt := []struct {
 		name    string
@@ -70,7 +70,7 @@ func (ts *TestSuite) TestWithdraw() {
 	}
 	for _, tc := range tt {
 		ts.Run(tc.name, func() {
-			err := ts.storage.NewWithdraw(ts.ctx, &model.Withdrawal{
+			err := ts.storage.CreateWithdraw(ts.ctx, &model.Withdrawal{
 				UserID:      tc.userID,
 				OrderID:     tc.orderID,
 				Sum:         tc.sum,

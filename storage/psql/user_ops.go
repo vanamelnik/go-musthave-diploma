@@ -11,8 +11,8 @@ import (
 	"github.com/vanamelnik/go-musthave-diploma/storage"
 )
 
-//NewUser implements Storage interface.
-func (p Psql) NewUser(ctx context.Context, user *model.User) error {
+//CreateUser implements Storage interface.
+func (p Psql) CreateUser(ctx context.Context, user model.User) error {
 	const query = `INSERT INTO users (id, login, password_hash, gpoints_balance, created_at)
 	VALUES ($1, $2, $3, $4, $5);`
 	_, err := p.db.ExecContext(ctx, query,
@@ -64,7 +64,7 @@ func (p Psql) UserByRemember(ctx context.Context, remember string) (*model.User,
 }
 
 // UpdateUser implements Storage interface.
-func (p Psql) UpdateUser(ctx context.Context, user *model.User) error {
+func (p Psql) UpdateUser(ctx context.Context, user model.User) error {
 	_, err := p.db.ExecContext(ctx, `UPDATE users SET
 	login=$1, password_hash=$2, remember_token=$3
 	WHERE id=$4;`, user.Login, user.PasswordHash, user.RememberToken, user.ID)

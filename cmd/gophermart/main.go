@@ -6,16 +6,13 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/vanamelnik/go-musthave-diploma/api/handlers"
+	"github.com/vanamelnik/go-musthave-diploma/api/rest"
 	"github.com/vanamelnik/go-musthave-diploma/cmd/gophermart/config"
 	appContext "github.com/vanamelnik/go-musthave-diploma/pkg/ctx"
 	"github.com/vanamelnik/go-musthave-diploma/pkg/logging"
-	"github.com/vanamelnik/go-musthave-diploma/pkg/middleware"
 	"github.com/vanamelnik/go-musthave-diploma/provider/accrual"
 	"github.com/vanamelnik/go-musthave-diploma/service/gophermart"
 	"github.com/vanamelnik/go-musthave-diploma/storage/psql"
-
-	"github.com/go-chi/chi"
 )
 
 func main() {
@@ -30,7 +27,7 @@ func main() {
 
 	// Connect to the database.
 	db, err := psql.New(
-		psql.WithConfig(cfg.Database),
+		psql.WithDSN(cfg.DatabaseURI),
 		psql.WithAutoMigrate(log, "file://storage/psql/migration"),
 	)
 	must(err)
@@ -45,23 +42,8 @@ func main() {
 	must(err)
 	defer service.Close()
 
-	// Setup handlers.
-	h := handlers.New(service, db)
-
 	// Setup routes
-	router := chi.NewRouter()
-	router.Use(middleware.WithLogger(log))
-	router.Use(middleware.GzipMdlw)
-
-	router.Post("/api/user/register", h.Register)
-	router.Post("/api/user/login", h.Login)
-
-	router.With(middleware.RequireUser(db)).Post("/api/user/orders", h.PostOrder)
-	router.With(middleware.RequireUser(db)).Get("/api/user/orders", h.GetOrders)
-	router.With(middleware.RequireUser(db)).Get("/api/user/balance", h.GetBalance)
-	router.With(middleware.RequireUser(db)).Post("/api/user/balance/withdraw", h.Withdraw)
-	router.With(middleware.RequireUser(db)).Get("/api/user/balance/withdrawals", h.GetWithdrawals)
-
+	router := rest.SetupRoutes(service, db, log)
 	server := http.Server{
 		Addr:    cfg.RunAddr,
 		Handler: router,

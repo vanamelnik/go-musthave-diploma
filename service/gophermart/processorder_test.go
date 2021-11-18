@@ -26,7 +26,7 @@ func TestProcessOrder(t *testing.T) {
 	user2 := uuid.New()
 
 	// Perform tests with calls to the mock storage
-	db.EXPECT().NewOrder(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
+	db.EXPECT().CreateOrder(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
 	tt1 := []struct {
 		name       string
 		orderID    model.OrderID
