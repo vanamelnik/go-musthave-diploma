@@ -10,7 +10,7 @@ import (
 // RequreUser returns a middleware function that checks if there's a user's remember token
 // in client's cookies. If OK and the user found in the storage, its object is attached
 // to the requst context.
-func RequireUser(db storage.Storage) func(http.Handler) http.Handler {
+func UserCtx(db storage.Storage) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			log := appContext.Logger(r.Context())

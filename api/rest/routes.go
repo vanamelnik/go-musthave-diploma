@@ -38,7 +38,7 @@ func SetupRoutes(service gophermart.Service, db storage.Storage, log zerolog.Log
 		r.Post("/login", h.Login)
 
 		r.Route("/", func(r chi.Router) {
-			r.Use(middleware.RequireUser(db))
+			r.Use(middleware.UserCtx(db))
 
 			r.Post("/orders", h.PostOrder)
 			r.Get("/orders", h.GetOrders)

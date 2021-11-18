@@ -8,7 +8,7 @@ import (
 	"github.com/vanamelnik/go-musthave-diploma/model"
 )
 
-// AccrualClient provides client requests to GopherAccuralService
+// AccrualClient provides client requests to GopherAccuralService.
 type AccrualClient interface {
 	Request(ctx context.Context, orderID model.OrderID) (*AccrualResponse, error)
 }

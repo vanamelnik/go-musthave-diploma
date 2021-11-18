@@ -9,6 +9,7 @@ import (
 	"github.com/vanamelnik/go-musthave-diploma/model"
 	"github.com/vanamelnik/go-musthave-diploma/pkg/bcrypt"
 	appContext "github.com/vanamelnik/go-musthave-diploma/pkg/ctx"
+	"github.com/vanamelnik/go-musthave-diploma/pkg/currency"
 	"github.com/vanamelnik/go-musthave-diploma/storage"
 
 	"github.com/google/uuid"
@@ -131,7 +132,7 @@ func (g *GopherMart) GetBalance(ctx context.Context) (UserBalance, error) {
 		return UserBalance{}, ErrNotAuthenticated
 	}
 
-	cb := UserBalance{}
+	balance := UserBalance{}
 
 	withdrawals, err := g.db.WithdrawalsByUserID(ctx, user.ID)
 	if err != nil && !errors.Is(err, storage.ErrNotFound) { // It's OK if the user has not performed any withdraw operations.
@@ -142,7 +143,8 @@ func (g *GopherMart) GetBalance(ctx context.Context) (UserBalance, error) {
 	// Collect information about total withdrawn bonus amount.
 	for _, w := range withdrawals {
 		if w.Status == model.StatusProcessed {
-			cb.Withdrawn += w.Sum
+			// add points using currency.Add
+			balance.Withdrawn = currency.Add(balance.Withdrawn, w.Sum)
 		}
 	}
 
@@ -158,12 +160,12 @@ func (g *GopherMart) GetBalance(ctx context.Context) (UserBalance, error) {
 		log.Trace().Err(err).Msg("")
 		return UserBalance{}, err
 	}
-	cb.Current = user.GPointsBalance
+	balance.Current = user.GPointsBalance
 
 	log.Info().
-		Float32("current", cb.Current).
-		Float32("withdrawn", cb.Withdrawn).
+		Float32("current", balance.Current).
+		Float32("withdrawn", balance.Withdrawn).
 		Msg("information about user's balance successfully received")
 
-	return cb, nil
+	return balance, nil
 }

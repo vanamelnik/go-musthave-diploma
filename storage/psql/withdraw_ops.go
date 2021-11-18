@@ -43,7 +43,7 @@ func (p Psql) CreateWithdraw(ctx context.Context, withdraw *model.Withdrawal) er
 		// if the transaction has been rolled back, set status to 'INVALID'
 		err := tx.Rollback()
 		if !errors.Is(err, sql.ErrTxDone) { // if transaction was rejected, set status to INVALID
-			log.Printf("transaction has been rolled back. updating withdrawals_log set status=INVALID orderID=%v", withdraw.OrderID)
+			log.Printf("transaction has been rolled back. Updating withdrawals_log set status=INVALID orderID=%v", withdraw.OrderID)
 			//nolint:errcheck
 			p.db.ExecContext(ctx, `UPDATE withdrawals_log SET status='INVALID' WHERE order_id=$1;`, withdraw.OrderID)
 		}

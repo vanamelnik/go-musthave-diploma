@@ -10,24 +10,24 @@ import (
 	"github.com/vanamelnik/go-musthave-diploma/model"
 )
 
-var _ AccrualClient = (*HttpClient)(nil)
+var _ AccrualClient = (*HTTPClient)(nil)
 
 const accrualRequestAPI = "/api/orders/"
 
-// HttpClient is implementation of api.AccrualClient interface.
-type HttpClient struct {
+// HTTPClient is implementation of api.AccrualClient interface.
+type HTTPClient struct {
 	accrualAPI string
 }
 
 // New creates a new instance of Accrual client.
-func New(accrualSystemURL string) HttpClient {
-	return HttpClient{
+func New(accrualSystemURL string) HTTPClient {
+	return HTTPClient{
 		accrualAPI: accrualSystemURL + accrualRequestAPI,
 	}
 }
 
 // Request performs a request to GopherAccrualService.
-func (c HttpClient) Request(ctx context.Context, orderID model.OrderID) (*AccrualResponse, error) {
+func (c HTTPClient) Request(ctx context.Context, orderID model.OrderID) (*AccrualResponse, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.accrualAPI+string(orderID), nil)
 	if err != nil {
 		return nil, fmt.Errorf("client: AccrualRequest: %w", err)
