@@ -52,7 +52,7 @@ type Storage interface {
 var (
 	// ErrNotFound is returned when there's no data is available in the database.
 	ErrNotFound           = errors.New("storage: not found")
-	ErrLoginAlreadyExists = errors.New("storage: login (login) already occupied")
+	ErrLoginAlreadyExists = errors.New("storage: login already occupied")
 
 	ErrAlreadyProcessed = errors.New("storage: already processed")
 	ErrInvalidStatus    = errors.New("storage: non-processed order has PROCESSED status")

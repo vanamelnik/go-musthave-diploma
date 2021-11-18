@@ -1,5 +1,5 @@
 run_address = ':3000'
-database_uri = 'postgres://root:qwe123@localhost:5432/gophermart?sslmode=disable'
+database_uri = 'postgres://root:secret@localhost:5432/gophermart?sslmode=disable'
 
 
 [service]

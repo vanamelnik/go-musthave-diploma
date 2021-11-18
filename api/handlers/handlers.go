@@ -63,14 +63,15 @@ func (h Handlers) Register(w http.ResponseWriter, r *http.Request) {
 	// Create a new user entry in DB.
 	user, err := h.svc.Create(r.Context(), u.Login, u.Password)
 	if err != nil {
-		log.Error().Err(err).Msg("creating a new user")
 		if errors.Is(err, storage.ErrLoginAlreadyExists) {
 			log.Error().Err(err).Msg("could not create the user")
 			http.Error(w, "Login already exists", http.StatusConflict)
 
 			return
 		}
-
+		log.Error().Err(err).Msg("creating a new user")
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
 	}
 	if err := h.signIn(w, r, user); err != nil {
 		log.Error().Err(err).Msg("could not authenticate the user")

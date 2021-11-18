@@ -20,7 +20,7 @@ func (p Psql) CreateUser(ctx context.Context, user model.User) error {
 	if err != nil {
 		var pgErr pgx.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.UniqueViolation {
-			return storage.ErrAlreadyProcessed
+			return storage.ErrLoginAlreadyExists
 		}
 
 		return err

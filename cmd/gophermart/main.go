@@ -53,7 +53,11 @@ func main() {
 
 	go func() {
 		err := server.ListenAndServe()
-		log.Info().Err(err).Msg("server stopped")
+		if err != nil && err != http.ErrServerClosed {
+			log.Error().Err(err).Msg("server stopped")
+			return
+		}
+		log.Info().Msg("server stopped")
 	}()
 	log.Info().Msgf("main: the server is listening at %s", cfg.RunAddr)
 

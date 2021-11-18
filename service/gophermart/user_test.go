@@ -83,7 +83,7 @@ func TestCreate(t *testing.T) {
 				assert.NoError(t, err)
 			}
 			if tc.wantNil {
-				assert.Nil(t, user)
+				assert.Equal(t, model.User{}, user)
 			} else {
 				assert.NotNil(t, user)
 			}
@@ -160,7 +160,7 @@ func TestAuthenticate(t *testing.T) {
 				assert.NoError(t, err)
 			}
 			if tc.wantNil {
-				assert.Nil(t, user)
+				assert.Equal(t, model.User{}, user)
 			} else {
 				assert.NotNil(t, user)
 			}

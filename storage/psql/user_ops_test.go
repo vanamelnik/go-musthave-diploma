@@ -24,7 +24,7 @@ func (ts *TestSuite) TestCreateUsers() {
 		{
 			name:    "#2 Create Bob again",
 			login:   "bobmarley@rambler.ru",
-			wantErr: storage.ErrAlreadyProcessed,
+			wantErr: storage.ErrLoginAlreadyExists,
 		},
 	}
 	for _, tc := range tt {

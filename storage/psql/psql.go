@@ -20,7 +20,7 @@ import (
 // Ensure service implements interface.
 var _ storage.Storage = (*Psql)(nil)
 
-const defaultDSN = "postgres://root:qwe123@localhost:5432/gophermart?sslmode=disable"
+const defaultDSN = "postgres://root:secret@localhost:5432/gophermart?sslmode=disable"
 
 type (
 	Psql struct {
