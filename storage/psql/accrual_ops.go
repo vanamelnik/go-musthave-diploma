@@ -24,7 +24,8 @@ func (p Psql) CreateAccrual(ctx context.Context, orderID model.OrderID, amount f
 	defer tx.Rollback()
 
 	// Get user ID from orders table
-	row := tx.QueryRowContext(ctx, `SELECT user_id, status FROM orders WHERE id=$1;`, orderID)
+	row := tx.QueryRowContext(ctx, `SELECT user_id, status FROM orders WHERE id=$1 FOR UPDATE;`,
+		orderID)
 	var userID uuid.UUID
 	var status model.Status
 	if err := row.Scan(&userID, &status); err != nil {
@@ -68,7 +69,12 @@ func (p Psql) UpdateBalance(ctx context.Context) (int, error) {
 	defer tx.Rollback()
 
 	// Collect information about unprocessed accruals.
-	rows, err := tx.QueryContext(ctx, `SELECT order_id, user_id, sum FROM accruals_log WHERE NOT processed;`)
+	rows, err := tx.QueryContext(ctx,
+		`SELECT accruals_log.order_id, accruals_log.user_id, accruals_log.sum
+		FROM accruals_log, users
+		WHERE NOT accruals_log.processed AND users.id = accruals_log.user_id
+		FOR UPDATE OF users;`)
+
 	if err != nil {
 		// If there are no unprocessed entries, all is OK.
 		if errors.Is(err, sql.ErrNoRows) {
