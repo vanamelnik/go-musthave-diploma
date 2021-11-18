@@ -38,10 +38,10 @@ type Storage interface {
 	// Flags 'processed' are set to true.
 	UpdateBalance(ctx context.Context) (int, error)
 
-	// CreateWithdraw creates a new entry in the withdrawals_log table and updates user's balance.
+	// ProcessWithdraw creates a new entry in the withdrawals_log table and updates user's balance.
 	// This function must update and check users's balance and return the error if the balance is less than the amount provided.
 	// OrderId must be unique.
-	CreateWithdraw(ctx context.Context, withdraw *model.Withdrawal) error
+	ProcessWithdraw(ctx context.Context, withdraw *model.Withdrawal) error
 	// WithdrawalsByUserID fetches all withdrawals made by the provided user. If there aren't any, empty slice is returned.
 	WithdrawalsByUserID(ctx context.Context, id uuid.UUID) ([]model.Withdrawal, error)
 

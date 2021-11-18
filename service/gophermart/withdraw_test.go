@@ -36,7 +36,7 @@ func TestWithdraw(t *testing.T) {
 	}
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
-			db.EXPECT().CreateWithdraw(gomock.Any(), gomock.Any()).Return(tc.mockReturn).Times(1)
+			db.EXPECT().ProcessWithdraw(gomock.Any(), gomock.Any()).Return(tc.mockReturn).Times(1)
 			assert.ErrorIs(t, s.Withdraw(ctx, "00", 123.45), tc.wantErr)
 		})
 	}

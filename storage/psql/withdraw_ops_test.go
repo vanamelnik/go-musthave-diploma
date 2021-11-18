@@ -70,7 +70,7 @@ func (ts *TestSuite) TestWithdraw() {
 	}
 	for _, tc := range tt {
 		ts.Run(tc.name, func() {
-			err := ts.storage.CreateWithdraw(ts.ctx, &model.Withdrawal{
+			err := ts.storage.ProcessWithdraw(ts.ctx, &model.Withdrawal{
 				UserID:      tc.userID,
 				OrderID:     tc.orderID,
 				Sum:         tc.sum,

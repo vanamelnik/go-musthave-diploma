@@ -7,7 +7,7 @@ import (
 	"github.com/vanamelnik/go-musthave-diploma/storage"
 )
 
-// RequreUser returns a middleware function that checks if there's a user's remember token
+// UserCtx returns a middleware function that checks if there's a user's remember token
 // in client's cookies. If OK and the user found in the storage, its object is attached
 // to the requst context.
 func UserCtx(db storage.Storage) func(http.Handler) http.Handler {

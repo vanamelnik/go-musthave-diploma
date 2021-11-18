@@ -18,21 +18,6 @@ func SetupRoutes(service gophermart.Service, db storage.Storage, log zerolog.Log
 	r.Use(middleware.WithLogger(log))
 	r.Use(middleware.GzipMdlw)
 
-	r.Post("/api/user/register", h.Register)
-	r.Post("/api/user/login", h.Login)
-
-	// // These endpoints required the user authenticated:
-	// r.Route("/api/user/orders", func(r chi.Router) {
-	// 	r.Use(middleware.RequireUser(db))
-	// 	r.Post("/", h.PostOrder)
-	// 	r.Get("/", h.GetOrders)
-	// })
-	// r.Route("/api/user/balance", func(r chi.Router) {
-	// 	r.Use(middleware.RequireUser(db))
-	// 	r.Get("/", h.GetBalance)
-	// 	r.Post("/withdraw", h.Withdraw)
-	// 	r.Get("/withdrawals", h.GetWithdrawals)
-	// })
 	r.Route("/api/user", func(r chi.Router) {
 		r.Post("/register", h.Register)
 		r.Post("/login", h.Login)

@@ -69,7 +69,7 @@ func (g *GopherMart) Withdraw(ctx context.Context, orderID model.OrderID, sum fl
 		return ErrNotAuthenticated
 	}
 
-	if err := g.db.CreateWithdraw(ctx, &model.Withdrawal{
+	if err := g.db.ProcessWithdraw(ctx, &model.Withdrawal{
 		UserID:      user.ID,
 		OrderID:     orderID,
 		Sum:         sum,

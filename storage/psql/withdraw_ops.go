@@ -14,8 +14,8 @@ import (
 	"github.com/jackc/pgx"
 )
 
-// CreateWithdraw implements Storage interface.
-func (p Psql) CreateWithdraw(ctx context.Context, withdraw *model.Withdrawal) error {
+// ProcessWithdraw implements Storage interface.
+func (p Psql) ProcessWithdraw(ctx context.Context, withdraw *model.Withdrawal) error {
 	// Try to create a new entry in the withdrawals_log table. If the order has already been processed, return an error.
 	withdraw.Status = model.StatusProcessing
 	if withdraw.Sum < 0 {
@@ -50,7 +50,7 @@ func (p Psql) CreateWithdraw(ctx context.Context, withdraw *model.Withdrawal) er
 	}()
 
 	// Try to change user's balance. If there are no enough points, return an error.
-	row := tx.QueryRowContext(ctx, `SELECT gpoints_balance FROM users WHERE id=$1;`, withdraw.UserID)
+	row := tx.QueryRowContext(ctx, `SELECT gpoints_balance FROM users WHERE id=$1 FOR UPDATE;`, withdraw.UserID)
 	var balance float32
 	if err := row.Scan(&balance); err != nil {
 		return err
