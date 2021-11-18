@@ -1,0 +1,12 @@
+run_address = ':3000'
+database_uri = 'postgres://root:secret@localhost:5432/gophermart?sslmode=disable'
+
+
+[service]
+accrual_system_address = 'localhost:1234'
+password_pepper = 'redhotchillipeppers'
+update_interval = '500ms'
+
+[logger]
+level = 'trace'
+console = true
