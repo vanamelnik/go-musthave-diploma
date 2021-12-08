@@ -3,7 +3,7 @@ package gophermart
 import (
 	"context"
 
-	"github.com/vanamelnik/go-musthave-diploma/model"
+	"github.com/vanamelnik/gophermart/model"
 )
 
 type (

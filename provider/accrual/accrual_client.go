@@ -7,7 +7,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/vanamelnik/go-musthave-diploma/model"
+	"github.com/vanamelnik/gophermart/model"
 )
 
 var _ AccrualClient = (*HTTPClient)(nil)

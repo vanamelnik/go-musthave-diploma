@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	appContext "github.com/vanamelnik/go-musthave-diploma/pkg/ctx"
+	appContext "github.com/vanamelnik/gophermart/pkg/ctx"
 )
 
 // balanceUpdater looks for unfinished acrrual operations and updates user balance with accrual points.

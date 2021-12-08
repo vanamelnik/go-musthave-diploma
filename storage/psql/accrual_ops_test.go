@@ -1,8 +1,8 @@
 package psql
 
 import (
-	"github.com/vanamelnik/go-musthave-diploma/model"
-	"github.com/vanamelnik/go-musthave-diploma/storage"
+	"github.com/vanamelnik/gophermart/model"
+	"github.com/vanamelnik/gophermart/storage"
 )
 
 func (ts *TestSuite) TestAccrual() {

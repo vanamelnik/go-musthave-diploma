@@ -3,7 +3,7 @@ package model
 import (
 	"time"
 
-	"github.com/vanamelnik/go-musthave-diploma/pkg/luhn"
+	"github.com/vanamelnik/gophermart/pkg/luhn"
 
 	"github.com/google/uuid"
 )

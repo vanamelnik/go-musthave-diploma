@@ -1,4 +1,4 @@
-module github.com/vanamelnik/go-musthave-diploma
+module github.com/vanamelnik/gophermart
 
 go 1.17
 

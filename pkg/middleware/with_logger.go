@@ -3,7 +3,7 @@ package middleware
 import (
 	"net/http"
 
-	appContext "github.com/vanamelnik/go-musthave-diploma/pkg/ctx"
+	appContext "github.com/vanamelnik/gophermart/pkg/ctx"
 
 	"github.com/rs/zerolog"
 )

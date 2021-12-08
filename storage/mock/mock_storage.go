@@ -10,7 +10,7 @@ import (
 
 	gomock "github.com/golang/mock/gomock"
 	uuid "github.com/google/uuid"
-	model "github.com/vanamelnik/go-musthave-diploma/model"
+	model "github.com/vanamelnik/gophermart/model"
 )
 
 // MockStorage is a mock of Storage interface.

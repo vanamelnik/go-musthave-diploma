@@ -5,7 +5,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/vanamelnik/go-musthave-diploma/model"
+	"github.com/vanamelnik/gophermart/model"
 
 	"github.com/google/uuid"
 )

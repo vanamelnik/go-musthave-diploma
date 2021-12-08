@@ -5,7 +5,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/vanamelnik/go-musthave-diploma/model"
+	"github.com/vanamelnik/gophermart/model"
 )
 
 // AccrualClient provides client requests to GopherAccuralService.

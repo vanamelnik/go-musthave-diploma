@@ -6,8 +6,8 @@ import (
 	"errors"
 	"log"
 
-	"github.com/vanamelnik/go-musthave-diploma/model"
-	"github.com/vanamelnik/go-musthave-diploma/storage"
+	"github.com/vanamelnik/gophermart/model"
+	"github.com/vanamelnik/gophermart/storage"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgerrcode"

@@ -7,7 +7,7 @@ import (
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/rs/zerolog"
-	"github.com/vanamelnik/go-musthave-diploma/storage"
+	"github.com/vanamelnik/gophermart/storage"
 
 	// Register postgres and file drivers.
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"

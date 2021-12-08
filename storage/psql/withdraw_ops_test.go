@@ -4,8 +4,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/vanamelnik/go-musthave-diploma/model"
-	"github.com/vanamelnik/go-musthave-diploma/storage"
+	"github.com/vanamelnik/gophermart/model"
+	"github.com/vanamelnik/gophermart/storage"
 )
 
 func (ts *TestSuite) TestWithdraw() {

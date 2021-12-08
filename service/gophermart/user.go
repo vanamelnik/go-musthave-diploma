@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/vanamelnik/go-musthave-diploma/model"
-	"github.com/vanamelnik/go-musthave-diploma/pkg/bcrypt"
-	appContext "github.com/vanamelnik/go-musthave-diploma/pkg/ctx"
-	"github.com/vanamelnik/go-musthave-diploma/pkg/currency"
-	"github.com/vanamelnik/go-musthave-diploma/storage"
+	"github.com/vanamelnik/gophermart/model"
+	"github.com/vanamelnik/gophermart/pkg/bcrypt"
+	appContext "github.com/vanamelnik/gophermart/pkg/ctx"
+	"github.com/vanamelnik/gophermart/pkg/currency"
+	"github.com/vanamelnik/gophermart/storage"
 
 	"github.com/google/uuid"
 )

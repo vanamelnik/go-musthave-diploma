@@ -3,8 +3,8 @@ package gophermart_test
 import (
 	"testing"
 
-	"github.com/vanamelnik/go-musthave-diploma/storage"
-	mockstorage "github.com/vanamelnik/go-musthave-diploma/storage/mock"
+	"github.com/vanamelnik/gophermart/storage"
+	mockstorage "github.com/vanamelnik/gophermart/storage/mock"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"

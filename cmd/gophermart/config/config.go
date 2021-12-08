@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/vanamelnik/go-musthave-diploma/service/gophermart"
+	"github.com/vanamelnik/gophermart/service/gophermart"
 
 	"github.com/hashicorp/go-multierror"
 	flag "github.com/spf13/pflag"

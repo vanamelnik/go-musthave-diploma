@@ -5,10 +5,10 @@ import (
 	"sync"
 	"time"
 
-	appContext "github.com/vanamelnik/go-musthave-diploma/pkg/ctx"
-	"github.com/vanamelnik/go-musthave-diploma/pkg/logging"
-	"github.com/vanamelnik/go-musthave-diploma/provider/accrual"
-	"github.com/vanamelnik/go-musthave-diploma/storage"
+	appContext "github.com/vanamelnik/gophermart/pkg/ctx"
+	"github.com/vanamelnik/gophermart/pkg/logging"
+	"github.com/vanamelnik/gophermart/provider/accrual"
+	"github.com/vanamelnik/gophermart/storage"
 
 	"github.com/rs/zerolog"
 )

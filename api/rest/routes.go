@@ -3,10 +3,10 @@ package rest
 import (
 	"github.com/go-chi/chi"
 	"github.com/rs/zerolog"
-	"github.com/vanamelnik/go-musthave-diploma/api/handlers"
-	"github.com/vanamelnik/go-musthave-diploma/pkg/middleware"
-	"github.com/vanamelnik/go-musthave-diploma/service/gophermart"
-	"github.com/vanamelnik/go-musthave-diploma/storage"
+	"github.com/vanamelnik/gophermart/api/handlers"
+	"github.com/vanamelnik/gophermart/pkg/middleware"
+	"github.com/vanamelnik/gophermart/service/gophermart"
+	"github.com/vanamelnik/gophermart/storage"
 )
 
 // SetupRoutes configures mux.

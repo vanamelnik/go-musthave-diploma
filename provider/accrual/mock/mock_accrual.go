@@ -9,8 +9,8 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	model "github.com/vanamelnik/go-musthave-diploma/model"
-	accrual "github.com/vanamelnik/go-musthave-diploma/provider/accrual"
+	model "github.com/vanamelnik/gophermart/model"
+	accrual "github.com/vanamelnik/gophermart/provider/accrual"
 )
 
 // MockAccrualClient is a mock of AccrualClient interface.

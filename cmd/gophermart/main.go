@@ -6,13 +6,13 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/vanamelnik/go-musthave-diploma/api/rest"
-	"github.com/vanamelnik/go-musthave-diploma/cmd/gophermart/config"
-	appContext "github.com/vanamelnik/go-musthave-diploma/pkg/ctx"
-	"github.com/vanamelnik/go-musthave-diploma/pkg/logging"
-	"github.com/vanamelnik/go-musthave-diploma/provider/accrual"
-	"github.com/vanamelnik/go-musthave-diploma/service/gophermart"
-	"github.com/vanamelnik/go-musthave-diploma/storage/psql"
+	"github.com/vanamelnik/gophermart/api/rest"
+	"github.com/vanamelnik/gophermart/cmd/gophermart/config"
+	appContext "github.com/vanamelnik/gophermart/pkg/ctx"
+	"github.com/vanamelnik/gophermart/pkg/logging"
+	"github.com/vanamelnik/gophermart/provider/accrual"
+	"github.com/vanamelnik/gophermart/service/gophermart"
+	"github.com/vanamelnik/gophermart/storage/psql"
 )
 
 func main() {

@@ -5,10 +5,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/vanamelnik/go-musthave-diploma/model"
-	"github.com/vanamelnik/go-musthave-diploma/pkg/bcrypt"
-	"github.com/vanamelnik/go-musthave-diploma/pkg/logging"
-	"github.com/vanamelnik/go-musthave-diploma/storage"
+	"github.com/vanamelnik/gophermart/model"
+	"github.com/vanamelnik/gophermart/pkg/bcrypt"
+	"github.com/vanamelnik/gophermart/pkg/logging"
+	"github.com/vanamelnik/gophermart/storage"
 
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"

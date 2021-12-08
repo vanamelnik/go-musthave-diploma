@@ -3,7 +3,7 @@ package ctx
 import (
 	"context"
 
-	"github.com/vanamelnik/go-musthave-diploma/model"
+	"github.com/vanamelnik/gophermart/model"
 
 	"github.com/rs/zerolog"
 )

@@ -9,10 +9,10 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/vanamelnik/go-musthave-diploma/model"
-	appContext "github.com/vanamelnik/go-musthave-diploma/pkg/ctx"
-	"github.com/vanamelnik/go-musthave-diploma/service/gophermart"
-	"github.com/vanamelnik/go-musthave-diploma/storage"
+	"github.com/vanamelnik/gophermart/model"
+	appContext "github.com/vanamelnik/gophermart/pkg/ctx"
+	"github.com/vanamelnik/gophermart/service/gophermart"
+	"github.com/vanamelnik/gophermart/storage"
 )
 
 const (

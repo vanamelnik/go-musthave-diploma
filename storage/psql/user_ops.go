@@ -7,8 +7,8 @@ import (
 
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx"
-	"github.com/vanamelnik/go-musthave-diploma/model"
-	"github.com/vanamelnik/go-musthave-diploma/storage"
+	"github.com/vanamelnik/gophermart/model"
+	"github.com/vanamelnik/gophermart/storage"
 )
 
 //CreateUser implements Storage interface.
