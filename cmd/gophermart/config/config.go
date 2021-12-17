@@ -16,7 +16,7 @@ import (
 
 var defaultConfig = Config{
 	RunAddr:           ":8080",
-	AccrualSystemAddr: "localhost:3000",
+	AccrualSystemAddr: "localhost:8080",
 	Logger: LoggerConfig{
 		Level:   "debug",
 		Console: false,
